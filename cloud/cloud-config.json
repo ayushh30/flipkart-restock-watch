@@ -1,0 +1,19 @@
+{
+  "product": {
+    "name": "New Balance 530 - WHITE 0SG",
+    "slug": "new-balance-530-sneakers-men",
+    "itm": "itm775a9863cb8e8"
+  },
+  "sizes": [
+    {
+      "size": "8.5",
+      "pid": "SHOHPJKV8ZGKBSKM",
+      "lid": "LSTSHOHPJKV8ZGKBSKMX2DIUG"
+    },
+    {
+      "size": "9",
+      "pid": "SHOHPJKVUKFGRVKE",
+      "lid": "LSTSHOHPJKVUKFGRVKEUAUYTM"
+    }
+  ]
+}
