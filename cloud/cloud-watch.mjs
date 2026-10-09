@@ -12,8 +12,9 @@ async function check(s) {
     const r = await fetch(url(s), { headers: H, signal: AbortSignal.timeout(10000) });
     const t = await r.text();
     if (r.status >= 400 || t.length < 200000) return 'blocked';
-    if (/Notify Me/.test(t)) return 'out';
-    return /Buy Now|Add to cart/i.test(t) ? 'in' : 'unknown';
+    if (!t.includes(s.pid)) return 'unknown';
+    // Sold-out sizes always render "Notify Me"; purchasable ones never do (verified on live pages).
+    return /Notify Me/.test(t) ? 'out' : 'in';
   } catch { return 'unknown'; }
 }
 
