@@ -34,12 +34,28 @@ async function check(s) {
 }
 
 const end = Date.now() + 270_000;
-let blocked = 0, polls = 0, alerted = new Set();
+let blocked = 0, polls = 0, readable = 0, blockedPushed = false, alerted = new Set();
+const startedAt = new Date();
+const halfHourSlot = startedAt.getUTCMinutes() % 30 < 5;  // true for runs starting in the first 5 min of each half hour
+const hourSlot = startedAt.getUTCMinutes() < 5;
 while (Date.now() < end) {
   const res = await Promise.all(config.sizes.map(async (s) => [s, await check(s)]));
   polls++;
   console.log(new Date().toISOString(), res.map(([s, st]) => `${s.size}:${st}`).join(' '));
   for (const [s, st] of res) if (st === 'in' && !alerted.has(s.size)) { alerted.add(s.size); await push(`RESTOCK: NB 530 size ${s.size} is IN STOCK`, `New Balance 530 WHITE 0SG, size ${s.size}. Tap to open Flipkart and buy NOW.`, url(s)); }
-  if (res.every(([, st]) => st === 'blocked')) { if (++blocked >= 5) { console.log('Flipkart is blocking this runner'); if (polls === blocked) await push('Cloud watcher blocked', 'Flipkart blocked GitHub servers. Rely on the Mac watcher.'); break; } } else blocked = 0;
+  if (res.some(([, st]) => st === 'out' || st === 'in')) readable++;
+  if (res.every(([, st]) => st === 'blocked')) {
+    if (++blocked >= 5) {
+      // Don't end the run early (that would chain into a rapid retry loop): idle out the rest of this run.
+      console.log('Flipkart is blocking this runner; idling until the end of this run');
+      if (!blockedPushed && halfHourSlot) { blockedPushed = true; await push('Cloud watcher blocked', 'Flipkart is blocking GitHub servers. Only the Mac watcher is checking.'); }
+      await new Promise((r) => setTimeout(r, Math.max(0, end - Date.now())));
+      break;
+    }
+  } else blocked = 0;
   await new Promise((r) => setTimeout(r, 3000 + Math.random() * 2000));
 }
+
+// Status pings, at most once per window so a 5-minute chain does not spam you.
+if (readable === 0 && polls > 0 && halfHourSlot && !blockedPushed) await push('Cloud watcher cannot read Flipkart', 'No readable product page this run. Check stock manually.');
+if (hourSlot && startedAt.getUTCHours() % 3 === 0) await push('Cloud watcher alive', 'GitHub watcher is running and reading Flipkart. Nothing in stock yet.');
