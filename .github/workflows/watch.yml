@@ -1,15 +1,22 @@
 name: restock-watch
 on:
-  schedule: [{ cron: '*/5 * * * *' }]
+  schedule: [{ cron: '*/5 * * * *' }]   # safety net: restarts the chain if it ever breaks
   workflow_dispatch:
 concurrency: { group: restock-watch, cancel-in-progress: false }
+permissions:
+  contents: read
+  actions: write
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: node cloud/cloud-watch.mjs
         env: { NTFY_TOPIC: '${{ secrets.NTFY_TOPIC }}' }
+      # Start the next run right away (queued by the concurrency group) so there is no gap between runs.
+      - if: always()
+        run: gh workflow run watch.yml --repo "$GITHUB_REPOSITORY" --ref "${{ github.ref_name }}"
+        env: { GH_TOKEN: '${{ github.token }}' }
