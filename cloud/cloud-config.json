@@ -1,20 +1,26 @@
 {
   "product": {
-    "name": "New Balance 530 - WHITE 0SG",
-    "slug": "new-balance-530-sneakers-men",
-    "itm": "itm775a9863cb8e8",
-    "colour": "WHITE 0SG"
+    "name": "ASICS Noosa Tri 16 (Men)",
+    "slug": "asics-noosa-tri-16-running-shoes-men"
   },
   "sizes": [
     {
-      "size": "8.5",
-      "pid": "SHOHPJKV8ZGKBSKM",
-      "lid": "LSTSHOHPJKV8ZGKBSKMX2DIUG"
+      "id": "VG9",
+      "size": "9",
+      "colour": "VITAL GREEN",
+      "label": "ASICS Noosa Tri 16 VITAL GREEN/COBALT BURST size 9",
+      "itm": "itmc9ccf049a204d",
+      "pid": "SHOHGDNDX3WADH5Q",
+      "lid": "LSTSHOHGDNDX3WADH5QNQEHJ8"
     },
     {
+      "id": "SP9",
       "size": "9",
-      "pid": "SHOHPJKVUKFGRVKE",
-      "lid": "LSTSHOHPJKVUKFGRVKEUAUYTM"
+      "colour": "SUN PEACH",
+      "label": "ASICS Noosa Tri 16 SUN PEACH/LEMON SPARK size 9",
+      "itm": "itm3c4d58da6b9b2",
+      "pid": "SHOHGDND7A5KGPTB",
+      "lid": "LSTSHOHGDND7A5KGPTBQG2C6P"
     }
   ]
 }
