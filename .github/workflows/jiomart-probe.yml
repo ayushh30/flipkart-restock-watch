@@ -1,0 +1,12 @@
+name: jiomart-probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm init -y >/dev/null && npm i playwright@1.49.0 --silent && npx playwright install --with-deps chromium
+      - run: xvfb-run -a node cloud/jiomart-probe.mjs
