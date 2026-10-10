@@ -1,0 +1,7 @@
+{
+  "query": "Google Fitbit Air",
+  "match": "obsidian",
+  "minPrice": 5000,
+  "runMinutes": 13,
+  "pollSeconds": [25, 40]
+}

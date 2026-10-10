@@ -1,0 +1,26 @@
+name: jiomart-watch
+on:
+  schedule: [{ cron: '*/30 * * * *' }]   # safety net: restarts the chain if it ever breaks (extra runs just queue)
+  workflow_dispatch:
+concurrency: { group: jiomart-watch, cancel-in-progress: false }
+permissions:
+  contents: read
+  actions: write
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm init -y >/dev/null && npm i playwright@1.49.0 --silent && npx playwright install --with-deps chromium
+      - run: xvfb-run -a node cloud/jiomart-watch.mjs
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          JIOMART_PIN: ${{ secrets.JIOMART_PIN }}
+          GH_TOKEN: ${{ github.token }}
+      # If the script itself crashed before dispatching, still start the next run.
+      - if: failure()
+        run: gh workflow run jiomart-watch.yml --repo "$GITHUB_REPOSITORY" --ref "${{ github.ref_name }}"
+        env: { GH_TOKEN: '${{ github.token }}' }
